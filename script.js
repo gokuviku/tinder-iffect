@@ -4,7 +4,7 @@ let users = [
     dispalyPic: "https://images.unsplash.com/photo-1612904370392-d1dde7a8ddc8?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     pending: "4",
     location: "delhi,india",
-    name:"shivangi",
+    name: "shivangi",
     age: "21",
     interests: [
       {
@@ -16,7 +16,7 @@ let users = [
         interest: "music"
       }
     ],
-    bio: "done it amet consectetur adipisicing elit. Inventore deserunt dignissimos labore saepe cum numquam, tempore aliquam distinctio quis fugiat vel maiores, iure aspernatur, maxime voluptates repudiandae provident et vitae!",
+    bio: "done it ame  elkfnwqto w4kg[k j t4tj4[t ktn  WJKRQNR S DQJ",
     isFriend: null
   },
   {
@@ -31,7 +31,7 @@ let users = [
         icon: `<i class="ri-music-2-fill"></i>`,
         interest: "music"
       }
-    ], 
+    ],
     bio: "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Inventore deserunt dignissimos labore saepe cum numquam, tempore aliquam distinctio quis fugiat vel maiores, iure aspernatur, maxime voluptates repudiandae provident et vitae!",
     isFriend: null
   },
@@ -51,7 +51,7 @@ let users = [
         icon: `<i class="ri-music-2-fill"></i>`,
         interest: "music"
       }
-    ],    
+    ],
     bio: "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Inventore deserunt dignissimos labore saepe cum numquam, tempore aliquam distinctio quis fugiat vel maiores, iure aspernatur, maxime voluptates repudiandae provident et vitae!",
     isFriend: null
   },
@@ -82,43 +82,119 @@ function select(elem) {
 }
 
 let curr = 0;
-
-(function setInitial() {
-  select(".maincard img").src = users[curr].dispalyPic;
-  select(".incomingcard img").src = users[curr + 1]?.dispalyPic;
-  select(".prfimg img").src = users[curr].profile;
-  select(".badge h5").textContent = users[curr].pending;
-  select(".location h3").textContent = users[curr].location;
-  select(".name:nth-child(1)").textContent = users[curr].name;
-  select(".name:nth-child(2)").textContent = users[curr].age;
+let isAnimating = false;
+function setData(index) {
+  select(".prfimg img").src = users[index].profile;
+  select(".badge h5").textContent = users[index].pending;
+  select(".location h3").textContent = users[index].location;
+  select(".name h1").textContent = users[index].name;
+  select(".name h2").textContent = users[index].age;
 
   let cluster = ""
-  users[curr].interests.forEach(function (interests) {
-    cluster +=`<div class="tag flex items-center bg-white/30 px-3 py-1 rounded-full gap-3">
+  users[index].interests.forEach(function (interests) {
+    cluster += `<div class="tag flex items-center bg-white/30 px-3 py-1 rounded-full gap-3">
                 ${interests.icon}<h3 class="text-sm tracking-tight">${interests.interest}</h3>
               </div>`
   })
   select(".tags").innerHTML = cluster;
 
-  select(".bio p").textContent=users[curr].bio;
+  select(".bio p").textContent = users[index].bio;
+
+}
+(function setInitial() {
+  select(".maincard img").src = users[curr].dispalyPic;
+  select(".incomingcard img").src = users[curr + 1]?.dispalyPic;
+  setData(curr)
   curr = 2
 
-})();
-//https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
-
-//"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+})()
 
 
 
-(function imageChange(){
-  let deny = select(".deny")
-  let accept = select(".accept")
-  
-  deny.addEventListener("click", function () {
-    console.log("hey")
+  (function imageChange() {
+    if (!isAnimating) {
+      isAnimating = true
+      let tl = gsap.timeline({
+        onComplete: function () {
+          isAnimating = false;
+          let main = select(".maincard")
+          let incoming = select(".incomingcard")
+
+          incoming.classList.remove("z-[2]")
+          incoming.classList.add("z-[3]")
+          incoming.classList.remove("incomingcard")
+
+          main.classList.remove("z-[3]")
+          main.classList.add("z-[2]")
+
+          gsap.set(main, {
+            scale: 1,
+            opacity: 1
+          })
+          if (curr === users.length) curr = 0
+          select(".maincard img").src = [curr].dispalyPic
+          curr++
+
+          main.classList.remove("maincard")
+          main.classList.add("incomingcard")
+          incoming.classList.add("maincard")
+
+
+        }
+      })
+      tl.to(".maincard", {
+        scale: 1.1,
+        opacity: 0,
+        ease: Circ,
+        duration: 0.9
+      }, "flag")
+
+        .from(".incomingcard", {
+          scale: 0.9,
+          opacity: 1,
+          ease: Circ,
+          duration: 1.1
+        }, "flag")
+    }
+  })()
+
+
+
+
+let deny = select(".deny")
+let accept = select(".accept")
+
+deny.addEventListener("click", function () {
+  imageChange();
+  setData(curr-1)
+  gsap.to(".details .ee", {
+    y: "100%",
+    opacity: 0,
+    duration: .7,
+    stagger: .1,
+    ease: Power4.easeInOut
   })
-
-  accept.addEventListener("click", function () {
-    console.log("hey")
+})
+accept.addEventListener("click", function () {
+  imageChange();
+  setData(curr-1)
+  gsap.to(".details .ee", {
+    y: "100%",
+    opacity: 0,
+    duration: .7,
+    stagger: .1,
+    ease: Power4.easeInOut
   })
-}) ();
+})
+
+
+function containerCreator() {
+  document.querySelectorAll(".ee").forEach(function (elem) {
+    let div = document.createElement("div");
+    dispatchEvent.classList.add(`${ee.classList[1]}container`, 'overflow-hidden')
+    div.appendChild(elem);
+    select(".details").appendChild(div)
+
+  })
+}
+containerCreator()
